@@ -16,6 +16,9 @@ use App\Http\Controllers\AuthController;
 |
 */
 
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products', [ProductController::class, 'create']);
@@ -23,7 +26,11 @@ Route::put('/products/{id}/update', [ProductController::class, 'update']);
 Route::delete('/products/{id}/delete', [ProductController::class, 'delete']);
 Route::get('/products/user/{id}', [ProductController::class, 'productUser']);
 
-Route::group(['prefix' => 'auth', 'controller' => AuthController::class], function () {
-    Route::post('/register', 'register');
-    Route::post('/login', 'login');
+
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/user/me', function() {
+        return response()->json(auth()->user());
+    });
+
+    Route::post('/logout', [AuthController::class, 'logout']);
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\User;
 
 class ProductController extends Controller
 {
@@ -21,7 +22,9 @@ class ProductController extends Controller
     {
         $input = $request->all();
 
-        $product = Product::create($input);
+        $user = User::find($input['user_id']);
+
+        $product = $user->products()->create($input);
 
         return $product;
     }
@@ -41,5 +44,12 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         return $product->delete();
+    }
+
+    public function productUser($id)
+    {
+        $productUser = User::find($id)->products;
+
+        return $productUser;
     }
 }

@@ -20,7 +20,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/user/me', function() {
+    Route::get('/user/me', function () {
         return response()->json(auth()->user());
     });
 
@@ -33,3 +33,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::delete('/products/{id}/delete', [ProductController::class, 'delete']);
     Route::get('/products-user', [ProductController::class, 'productUser']);
 });
+
+// halo nama saya zikran 

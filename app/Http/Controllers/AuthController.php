@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Validator;
 use Auth;
+use App\Http\Resources\AuthResource;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
@@ -14,31 +16,22 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:55|exists:users,email',
-            'password' => 'required|string'
+            'password' => 'required|string|min:8'
         ]);
 
         if($validator->fails()) {
-            return response()->json($validator->errors());
+            throw new HttpException(400, $validator->errors()->messages());
         }
 
         $input = $validator->validated();
 
         if(! Auth::attempt($input)) {
-            return response()->json(['message' => 'password salah!']);
+            throw new HttpException(400, 'Password Salah!');
         }
 
         $user = User::where('email', '=', $input['email'])->firstOrFail();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'data' => [
-                'name' => $user->name,
-                'email' => $user->email
-            ],
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
+        return new AuthResource($user);
     }
 
     public function register(Request $request)
@@ -50,7 +43,7 @@ class AuthController extends Controller
         ]);
 
         if($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 400);
         }
 
         $input = $validator->validated();
@@ -63,20 +56,13 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'data' => [
-                'name' => $user->name,
-                'email' => $user->email
-            ],
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
+        return new AuthResource($user);
     }
 
     public function logout()
     {
         auth()->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Kamu telah logout.']);
+        return response()->json(['message' => 'Kamu telah logout.'], 200);
     }
 }

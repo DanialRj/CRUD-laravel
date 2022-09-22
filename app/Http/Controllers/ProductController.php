@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         $input = $request->all();
 
-        $user = User::find($input['user_id']);
+        $user = auth()->user();
 
         $product = $user->products()->create($input);
 
@@ -46,9 +46,9 @@ class ProductController extends Controller
         return $product->delete();
     }
 
-    public function productUser($id)
+    public function productUser()
     {
-        $productUser = User::find($id)->products;
+        $productUser = auth()->user()->products;
 
         return $productUser;
     }

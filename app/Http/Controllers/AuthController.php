@@ -5,24 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Validator;
 use Auth;
 use App\Http\Resources\AuthResource;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Http\Requests\AuthRequest;
+use App\Http\Requests\AuthRegisterRequest;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(AuthRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|max:55|exists:users,email',
-            'password' => 'required|string|min:8'
-        ]);
-
-        if($validator->fails()) {
-            throw new HttpException(400, $validator->errors()->messages());
-        }
-
         $input = $validator->validated();
 
         if(! Auth::attempt($input)) {
@@ -36,16 +28,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:10',
-            'email' => 'required|email|max:55|unique:users',
-            'password' => 'required|string'
-        ]);
-
-        if($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
         $input = $validator->validated();
 
         $user = User::create([

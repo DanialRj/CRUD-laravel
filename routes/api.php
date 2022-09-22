@@ -34,6 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/products-user', [ProductController::class, 'productUser']);
 });
 
-// halo nama saya zikran 
- 
+// halo nama saya zikran
+// salam Ibnu
+
 // kjwxhweuiiweuoiehg
